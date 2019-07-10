@@ -1,0 +1,7 @@
+# Used on a per-dev basis for local working files
+scratch/
+
+# Temporary editor files
+*~
+\#*\#
+
