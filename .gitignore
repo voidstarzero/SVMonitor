@@ -5,3 +5,6 @@ scratch/
 *~
 \#*\#
 
+# The project build files and binaries
+build/
+svmon*
