@@ -1,5 +1,7 @@
 #pragma once
 
+#include "./GLShader.hpp"
+
 #include <SFML/Window.hpp>
 #include <GL/glew.h>
 
@@ -42,6 +44,19 @@ public:
     void resizeContext(unsigned width, unsigned height)
     {
         glViewport(0, 0, (int)width, (int)height);
+    }
+
+    sf::Vector2u getSize()
+    {
+        return m_mainWindow.getSize();
+    }
+
+    void useProgram(GLShader& program)
+    {
+        program.use();
+
+        sf::Vector2u size = getSize();
+        program.notifyResize(size.x, size.y);
     }
 
     bool running()

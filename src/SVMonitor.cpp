@@ -107,17 +107,13 @@ sf::Vector2f speedo[] = {
     {50, 120}, {60, 120}
 };
 
-GLuint vPos;
 GLuint sScale;
 GLuint sLoc;
 GLuint sRot;
 GLuint color;
-GLuint winSize;
 
-void fillLocations(GLShader& program)
+void getInitProgramUniforms(GLShader& program)
 {
-    vPos = program.attribLocation("vertexPosition");
-
     sScale = program.uniformLocation("shapeScale");
     glUniform2f(sScale, 1, 1);
 
@@ -129,9 +125,6 @@ void fillLocations(GLShader& program)
 
     color = program.uniformLocation("lineColor");
     glUniform3f(color, 1, 1, 1);
-
-    winSize = program.uniformLocation("windowSize");
-    glUniform2f(winSize, 800, 600);
 }
 
 int main()
@@ -145,10 +138,13 @@ int main()
     GLShader program = GLShader::load(
         "./res/shaders/vertex.glsl",
         "./res/shaders/fragment.glsl");
-    program.use();
-    fillLocations(program);
+    window.useProgram(program);
 
-    GLVertexArray vaSpeedo(vPos, c_array_totsz(speedo), speedo);
+    GLVertexArray vaSpeedo(
+        program.attribLocation("vertexPosition"),
+        c_array_totsz(speedo), speedo);
+
+    getInitProgramUniforms(program);
 
     while (window.running())
     {
@@ -163,7 +159,7 @@ int main()
             else if (event.type == sf::Event::Resized)
             {
                 window.resizeContext(event.size.width, event.size.height);
-                glUniform2f(winSize, event.size.width, event.size.height);
+                program.notifyResize(event.size.width, event.size.height);
             }
             else if (event.type == sf::Event::KeyPressed)
             {
