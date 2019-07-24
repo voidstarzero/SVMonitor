@@ -1,4 +1,5 @@
 #include "./GLShader.hpp"
+#include "./SFMLWindow.hpp"
 
 #include <GL/glew.h>
 
@@ -124,7 +125,9 @@ void initBuffers()
 
     glBufferData(GL_ARRAY_BUFFER, sizeof (speedo), speedo, GL_STATIC_DRAW);
 
-    GLShader program = GLShader::load("./src/vertex.glsl", "./src/fragment.glsl");
+    GLShader program = GLShader::load(
+        "./res/shaders/vertex.glsl",
+        "./res/shaders/fragment.glsl");
     program.use();
 
     GLuint vOff = program.attribLocation("vOffset");
@@ -146,18 +149,11 @@ void initBuffers()
 
 int main()
 {
-    sf::ContextSettings windowSettings(
-        0, 0, 8, 3, 2, sf::ContextSettings::Core);
-    sf::VideoMode defaultWinsize(800, 600);
-    sf::Window window(
-        defaultWinsize, windowTitle, sf::Style::None, windowSettings);
+    SFMLWindow window(800, 600, windowTitle);
+    window.activate();
 
-    window.setFramerateLimit(60);
-    window.setActive(true);
-
-    glewInit();
-    glClearColor(0, 0, 0, 1);
-    glLineWidth(2);
+    window.clearColor(0, 0, 0);
+    window.lineWidth(2);
 
     initBuffers();
 
@@ -184,16 +180,10 @@ int main()
                 {
                     running = false;
                 }
-                else if (event.key.code == sf::Keyboard::F11)
-                {
-                    sf::VideoMode fullscreen = sf::VideoMode::getFullscreenModes()[0];
-                    window.setPosition({0, 0});
-                    window.setSize({fullscreen.width, fullscreen.height});
-                }
             }
         }
 
-        glClear(GL_COLOR_BUFFER_BIT);
+        window.clear();
 
         size_t endP = (sizeof (speedo) / sizeof (speedo[0])) - 2;
 
@@ -223,8 +213,6 @@ int main()
         {
             direction = 1;
         }
-
-        glFinish();
     }
 
     return 0;
