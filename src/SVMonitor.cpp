@@ -47,8 +47,8 @@ int main()
     window.lineWidth(2);
 
     GLShader program = GLShader::load(
-        "./res/shaders/vertex.glsl",
-        "./res/shaders/fragment.glsl");
+        "./res/shaders/polar_shape.vert",
+        "./res/shaders/single_opaque.frag");
     window.useProgram(program);
 
     program.lineColor(1, 1, 1);
