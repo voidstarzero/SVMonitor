@@ -1,7 +1,7 @@
 EXEC ?= ./svmon
 
 CXX ?= g++
-CXXFLAGS ?= -std=gnu++17 -O2 -Wall -Wextra
+CXXFLAGS ?= -std=gnu++17 -flto -O2 -Wall -Wextra
 LIBS ?= -lGLEW -lGLU -lGL -lsfml-window -lsfml-system
 
 BUILD_DIR ?= ./build
