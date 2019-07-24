@@ -1,4 +1,5 @@
 #include "./GLShader.hpp"
+#include "./GLVertexArray.hpp"
 #include "./SFMLWindow.hpp"
 #include "./Shapes.hpp"
 #include "./Util.hpp"
@@ -10,8 +11,6 @@
 
 #include <iostream>
 #include <stdio.h>
-
-#define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
 const char* windowTitle = "SVMonitor";
 
@@ -108,32 +107,16 @@ sf::Vector2f speedo[] = {
     {50, 120}, {60, 120}
 };
 
+GLuint vPos;
 GLuint sScale;
 GLuint sLoc;
 GLuint sRot;
 GLuint color;
 GLuint winSize;
 
-void initBuffers()
+void fillLocations(GLShader& program)
 {
-    GLuint vao;
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
-
-    GLuint buffer;
-    glGenBuffers(1, &buffer);
-    glBindBuffer(GL_ARRAY_BUFFER, buffer);
-
-    glBufferData(GL_ARRAY_BUFFER, c_array_totsz(speedo), speedo, GL_STATIC_DRAW);
-
-    GLShader program = GLShader::load(
-        "./res/shaders/vertex.glsl",
-        "./res/shaders/fragment.glsl");
-    program.use();
-
-    GLuint vPos = program.attribLocation("vertexPosition");
-    glEnableVertexAttribArray(vPos);
-    glVertexAttribPointer(vPos, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
+    vPos = program.attribLocation("vertexPosition");
 
     sScale = program.uniformLocation("shapeScale");
     glUniform2f(sScale, 1, 1);
@@ -159,7 +142,13 @@ int main()
     window.clearColor(0, 0, 0);
     window.lineWidth(2);
 
-    initBuffers();
+    GLShader program = GLShader::load(
+        "./res/shaders/vertex.glsl",
+        "./res/shaders/fragment.glsl");
+    program.use();
+    fillLocations(program);
+
+    GLVertexArray vaSpeedo(vPos, c_array_totsz(speedo), speedo);
 
     while (window.running())
     {
@@ -189,7 +178,8 @@ int main()
         window.clear();
 
         // Do rendering here
-        glDrawArrays(GL_LINES, 0, c_array_nelems(speedo));
+        vaSpeedo.bind();
+        vaSpeedo.draw(GL_LINES, 0, c_array_nelems(speedo));
 
         window.display();
 
