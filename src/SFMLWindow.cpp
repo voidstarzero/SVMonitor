@@ -12,6 +12,7 @@ SFMLWindow::SFMLWindow(unsigned pxWidth, unsigned pxHeight, const char* title, u
 
     m_mainWindow.create(windowSize, title, sf::Style::Default, windowSettings);
     m_mainWindow.setFramerateLimit(60);
+    m_mainWindow.setKeyRepeatEnabled(false);
 
     glewInit();
 }
