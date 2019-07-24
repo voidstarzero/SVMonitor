@@ -22,10 +22,10 @@ GLuint color;
 void getInitProgramUniforms(GLShader& program)
 {
     sScale = program.uniformLocation("shapeScale");
-    glUniform2f(sScale, 4, 1);
+    glUniform2f(sScale, 8, 1);
 
     sLoc = program.uniformLocation("shapeLocation");
-    glUniform2f(sLoc, 400, 300);
+    glUniform2f(sLoc, 400, 350);
 
     sRot = program.uniformLocation("shapeRotation");
     glUniform1f(sRot, -120);
@@ -44,7 +44,7 @@ int main()
     window.activate();
 
     window.clearColor(0, 0, 0);
-    window.lineWidth(2);
+    window.lineWidth(3);
 
     GLShader program = GLShader::load(
         "./res/shaders/polar_shape.vert",
@@ -64,7 +64,8 @@ int main()
 
     float vel = 0;
     float pos = 120;
-    bool mouseDown = sf::Mouse::isButtonPressed(sf::Mouse::Left);
+    int eventDown = (sf::Mouse::isButtonPressed(sf::Mouse::Left) ? 1 : 0)
+                     + (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) ? 1 : 0);
     while (window.running())
     {
         // Do pre-frame updates
@@ -87,18 +88,36 @@ int main()
                 {
                     window.markStop();
                 }
+                else if (event.key.code == sf::Keyboard::Space)
+                {
+                    eventDown += 1;
+                }
+            }
+            else if (event.type == sf::Event::KeyReleased)
+            {
+                if (event.key.code == sf::Keyboard::Space)
+                {
+                    eventDown -= 1;
+                }
             }
             else if (event.type == sf::Event::MouseButtonPressed)
             {
                 if (event.mouseButton.button == sf::Mouse::Left)
-                    mouseDown = true;
+                    eventDown += 1;
             }
             else if (event.type == sf::Event::MouseButtonReleased)
             {
                 if (event.mouseButton.button == sf::Mouse::Left)
-                    mouseDown = false;
+                    eventDown -= 1;
             }
         }
+
+        // Post-event updates
+        vel += (eventDown ? 0.1 : -0.12);
+        vel = clamp(vel, -4, 4);
+        pos += vel;
+        pos = clamp(pos, -120, 120);
+        if (pos == -120 || pos == 120) vel = 0;
 
         window.clear();
         program.lineColor(1, 1, 1);
@@ -106,25 +125,19 @@ int main()
         // Do rendering here
         vaCircle.bind();
         vaCircle.draw(GL_LINES, 0, 240 * 2);
+
         vaSmallSpurs.bind();
         vaSmallSpurs.draw(GL_LINES, 0, (48 + 1) * 2);
         vaSpurs.bind();
         vaSpurs.draw(GL_LINES, 0, (24 + 1) * 2);
 
+        glUniform1f(sRot, pos);
         vaNeedle.bind();
         program.lineColor(1, 0.2, 0);
-        glUniform1f(sRot, pos);
         vaNeedle.draw(GL_TRIANGLES, 0, 9);
         glUniform1f(sRot, -120);
 
         window.display();
-
-        // Do post-frame updates
-        vel += (mouseDown ? 0.1 : -0.1);
-        vel = clamp(vel, -4, 4);
-        pos += vel;
-        pos = clamp(pos, -120, 120);
-        if (pos == -120 || pos == 120) vel = 0;
     }
 
     window.close();
