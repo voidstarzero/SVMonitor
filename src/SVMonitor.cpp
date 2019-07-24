@@ -1,5 +1,6 @@
 #include "./GLShader.hpp"
 #include "./SFMLWindow.hpp"
+#include "./Util.hpp"
 
 #include <GL/glew.h>
 
@@ -123,7 +124,7 @@ void initBuffers()
     glGenBuffers(1, &buffer);
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
 
-    glBufferData(GL_ARRAY_BUFFER, sizeof (speedo), speedo, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, c_array_totsz(speedo), speedo, GL_STATIC_DRAW);
 
     GLShader program = GLShader::load(
         "./res/shaders/vertex.glsl",
@@ -185,7 +186,7 @@ int main()
 
         window.clear();
 
-        size_t endP = (sizeof (speedo) / sizeof (speedo[0])) - 2;
+        size_t endP = c_array_nelems(speedo) - 2;
 
         for (int x = 100; x < 1600; x += 200)
             for (int y = 100; y < 1200; y += 100)
