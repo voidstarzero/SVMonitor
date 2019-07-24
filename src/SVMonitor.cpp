@@ -175,7 +175,8 @@ int main()
             }
             else if (event.type == sf::Event::KeyPressed)
             {
-                if (event.key.code == sf::Keyboard::Escape)
+                if (event.key.code == sf::Keyboard::Escape
+                    || event.key.code == sf::Keyboard::Q)
                 {
                     window.markStop();
                 }
