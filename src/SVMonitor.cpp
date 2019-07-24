@@ -29,9 +29,6 @@ void getInitProgramUniforms(GLShader& program)
 
     sRot = program.uniformLocation("shapeRotation");
     glUniform1f(sRot, 0);
-
-    color = program.uniformLocation("lineColor");
-    glUniform3f(color, 1, 1, 1);
 }
 
 int main()
@@ -46,6 +43,8 @@ int main()
         "./res/shaders/vertex.glsl",
         "./res/shaders/fragment.glsl");
     window.useProgram(program);
+
+    program.lineColor(1, 1, 1);
 
     getInitProgramUniforms(program);
 
