@@ -1,5 +1,6 @@
 #include "./GLShader.hpp"
 #include "./SFMLWindow.hpp"
+#include "./Shapes.hpp"
 #include "./Util.hpp"
 
 #include <GL/glew.h>
@@ -104,12 +105,11 @@ sf::Vector2f speedo[] = {
     {50, 30}, {60, 30}, {50, 40}, {60, 40}, {50, 50}, {60, 50},
     {50, 60}, {60, 60}, {50, 70}, {60, 70}, {50, 80}, {60, 80},
     {50, 90}, {60, 90}, {50, 100}, {60, 100}, {50, 110}, {60, 110},
-    {50, 120}, {60, 120},
-
-    {0, 0}, {50, 0}
+    {50, 120}, {60, 120}
 };
 
-GLuint sPos;
+GLuint sScale;
+GLuint sLoc;
 GLuint sRot;
 GLuint color;
 GLuint winSize;
@@ -131,20 +131,23 @@ void initBuffers()
         "./res/shaders/fragment.glsl");
     program.use();
 
-    GLuint vOff = program.attribLocation("vOffset");
-    glEnableVertexAttribArray(vOff);
-    glVertexAttribPointer(vOff, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
+    GLuint vPos = program.attribLocation("vertexPosition");
+    glEnableVertexAttribArray(vPos);
+    glVertexAttribPointer(vPos, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
 
-    sPos = program.uniformLocation("sPosition");
-    glUniform2f(sPos, 0, 0);
+    sScale = program.uniformLocation("shapeScale");
+    glUniform2f(sScale, 1, 1);
 
-    sRot = program.uniformLocation("sRot");
+    sLoc = program.uniformLocation("shapeLocation");
+    glUniform2f(sLoc, 400, 300);
+
+    sRot = program.uniformLocation("shapeRotation");
     glUniform1f(sRot, 0);
 
     color = program.uniformLocation("lineColor");
-    glUniform3f(color, 1, 0.2, 0);
+    glUniform3f(color, 1, 1, 1);
 
-    winSize = program.uniformLocation("winSize");
+    winSize = program.uniformLocation("windowSize");
     glUniform2f(winSize, 800, 600);
 }
 
@@ -158,10 +161,9 @@ int main()
 
     initBuffers();
 
-    int ctr = -120;
-    int direction = 1;
     while (window.running())
     {
+        // Do pre-frame updates
         sf::Event event;
         while (window.pollEvent(event))
         {
@@ -186,34 +188,12 @@ int main()
 
         window.clear();
 
-        size_t endP = c_array_nelems(speedo) - 2;
-
-        for (int x = 100; x < 1600; x += 200)
-            for (int y = 100; y < 1200; y += 100)
-            {
-                glUniform2f(sPos, x, y);
-
-                glUniform1f(sRot, 0.f);
-                glUniform3f(color, 1, 1, 1);
-                glDrawArrays(GL_LINES, 0, endP);
-
-                glUniform1f(sRot, (float)ctr);
-                glUniform3f(color, 1, 0.2, 0);
-                glDrawArrays(GL_LINES, endP, 2);
-            }
+        // Do rendering here
+        glDrawArrays(GL_LINES, 0, c_array_nelems(speedo));
 
         window.display();
 
-        ctr += direction;
-
-        if (ctr == 120)
-        {
-            direction = -1;
-        }
-        else if (ctr == -120)
-        {
-            direction = 1;
-        }
+        // Do post-frame updates
     }
 
     window.close();
