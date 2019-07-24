@@ -39,6 +39,27 @@ public:
         glLineWidth(width);
     }
 
+    void resizeContext(unsigned width, unsigned height)
+    {
+        glViewport(0, 0, (int)width, (int)height);
+    }
+
+    bool running()
+    {
+        return m_running;
+    }
+
+    void markStop()
+    {
+        m_running = false;
+    }
+
+    void close()
+    {
+        m_mainWindow.close();
+    }
+
 private:
+    bool m_running;
     sf::Window m_mainWindow;
 };

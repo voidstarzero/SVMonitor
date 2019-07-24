@@ -157,28 +157,27 @@ int main()
 
     initBuffers();
 
-    bool running = true;
     int ctr = -120;
     int direction = 1;
-    while (running)
+    while (window.running())
     {
         sf::Event event;
         while (window.pollEvent(event))
         {
             if (event.type == sf::Event::Closed)
             {
-                running = false;
+                window.markStop();
             }
             else if (event.type == sf::Event::Resized)
             {
-                glViewport(0, 0, event.size.width, event.size.height);
+                window.resizeContext(event.size.width, event.size.height);
                 glUniform2f(winSize, event.size.width, event.size.height);
             }
             else if (event.type == sf::Event::KeyPressed)
             {
                 if (event.key.code == sf::Keyboard::Escape)
                 {
-                    running = false;
+                    window.markStop();
                 }
             }
         }
@@ -214,6 +213,8 @@ int main()
             direction = 1;
         }
     }
+
+    window.close();
 
     return 0;
 }

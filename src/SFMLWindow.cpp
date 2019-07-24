@@ -1,6 +1,7 @@
 #include "./SFMLWindow.hpp"
 
 SFMLWindow::SFMLWindow(unsigned pxWidth, unsigned pxHeight, const char* title, unsigned aaLevel)
+: m_running(true)
 {
     sf::ContextSettings windowSettings(
         0, // Depth buffer size, unneeded for this type of 2D drawing
